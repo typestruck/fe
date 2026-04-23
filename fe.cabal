@@ -1,0 +1,70 @@
+cabal-version:      3.14
+name:               word-lines
+version:            0.1.0.0
+synopsis:           Word game
+description:        Fast paced, multiplayer word game
+license:            GPL-3.0-or-later
+license-file:       LICENSE
+author:             easafe
+maintainer:         e@asafe.dev
+category:           Game
+build-type:         Simple
+
+flag interactive
+  default:
+    False
+  manual:
+    True
+
+common warnings
+  ghc-options:
+    -funbox-strict-fields -O2 -ferror-spans -fspecialise-aggressively -Wall
+
+common options
+  default-extensions:
+    UnicodeSyntax, OverloadedRecordDot
+  if arch(wasm32)
+    ghc-options:
+      -no-hs-main -optl-mexec-model=reactor "-optl-Wl,--export=hs_start"
+    cpp-options:
+      -DWASM
+    if flag (interactive)
+      cpp-options:
+        -DINTERACTIVE
+
+  if arch(javascript)
+     ld-options:
+       -sEXPORTED_RUNTIME_METHODS=HEAP8
+
+common common-modules
+  other-modules:
+    Game.Model, Game.View, Game.Action, Game.User
+
+executable app
+  import:
+    options, warnings, common-modules
+  main-is:
+    Main.hs
+  build-depends:
+    base < 5, miso >= 1.9, mtl, random, unordered-containers, text
+  other-modules:
+    Game
+  hs-source-dirs:
+    src
+  default-language:
+    GHC2024
+
+-- need to be like this instead of depending on library because otherwise it breaks js code generation
+executable test
+  import:
+    options, warnings, common-modules
+  main-is:
+    Main.hs
+  build-depends:
+    base < 5, miso >= 1.9, mtl, random, unordered-containers, text, hedgehog
+  other-modules:
+    Game
+  hs-source-dirs:
+    test, src
+  default-language:
+    GHC2024

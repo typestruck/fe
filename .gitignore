@@ -13,6 +13,8 @@ cabal-dev
 .cabal-sandbox/
 cabal.sandbox.config
 *.prof
+public/
+node_modules/
 *.aux
 *.hp
 *.eventlog
