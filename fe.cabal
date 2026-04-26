@@ -38,7 +38,7 @@ common options
 
 common common-modules
   other-modules:
-    Game.Model, View, Game.Action, Game.User, Styles
+    User.View, Game.Model, View, Game.Action, Game.User, Styles, Game.View
 
 executable app
   import:
