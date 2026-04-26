@@ -38,7 +38,7 @@ common options
 
 common common-modules
   other-modules:
-    Game.Model, Game.View, Game.Action, Game.User
+    Game.Model, View, Game.Action, Game.User, Styles
 
 executable app
   import:
@@ -48,7 +48,7 @@ executable app
   build-depends:
     base < 5, miso >= 1.9, mtl, random, unordered-containers, text
   other-modules:
-    Game
+    App
   hs-source-dirs:
     src
   default-language:
@@ -63,7 +63,7 @@ executable test
   build-depends:
     base < 5, miso >= 1.9, mtl, random, unordered-containers, text, hedgehog
   other-modules:
-    Game
+    App
   hs-source-dirs:
     test, src
   default-language:

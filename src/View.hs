@@ -1,7 +1,7 @@
 {-# LANGUAGE ExtendedDefaultRules #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Game.View where
+module View where
 
 import Data.List qualified as DL
 import Game.Action (Action (..))

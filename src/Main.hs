@@ -4,9 +4,10 @@ module Main where
 
 import Miso qualified as M
 import Miso.String qualified as MS
-import qualified Game as G
+import qualified App as A
 import System.Random qualified as MR
-import Miso (defaultEvents, JS (Src), CSS (Href))
+import Styles(styles)
+import Miso (defaultEvents,  CSS(Style))
 
 #ifdef WASM
 #ifndef INTERACTIVE
@@ -18,12 +19,11 @@ main ∷ IO ()
 #ifdef INTERACTIVE
 main = do
     generator ← MR.newStdGen
-    -- cumbersome, but for development we load assets from a local server so it is possible to use miso's hot reload
-    M.reload defaultEvents $ G.app [] [Href (MS.pack "http://localhost:8081/static/styles.css") False] generator
+    M.reload defaultEvents $ A.app [] [Style styles] generator
 #else
 main = do
     generator ← MR.newStdGen
-    M.prerender defaultEvents $ G.app [] [] generator
+    M.prerender defaultEvents $ A.app [] [] generator
 #endif
 
 
