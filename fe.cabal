@@ -48,7 +48,7 @@ executable app
   build-depends:
     base < 5, miso >= 1.9, mtl, random, unordered-containers, text
   other-modules:
-    App
+    Game
   hs-source-dirs:
     src
   default-language:
@@ -59,11 +59,11 @@ executable test
   import:
     options, warnings, common-modules
   main-is:
-    Main.hs
+    Test.hs
   build-depends:
     base < 5, miso >= 1.9, mtl, random, unordered-containers, text, hedgehog
   other-modules:
-    App
+    Game
   hs-source-dirs:
     test, src
   default-language:

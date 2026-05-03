@@ -19,6 +19,6 @@ view ∷ Model → View Model Action
 view model =
     HE.main_
         [HP.className "dark:bg-gray-800 dark:text-white min-h-full flex flex-col md:flex-row md:items-start"]
-        [ UV.view
-        , GV.view
+        [ UV.view model
+        , GV.view model
         ]

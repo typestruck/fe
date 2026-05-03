@@ -12,8 +12,8 @@ import Miso.Html.Property qualified as HP
 
 default (MisoString)
 
-view ∷ View Model Action
-view =
+view ∷ Model -> View Model Action
+view model =
     HE.div_
         [HP.className "flex justify-center grow mt-10"]
         [ HE.button_ [HP.className "dark:bg-green-500 font-bold text-xl rounded-sm p-10"] [M.text "New game vs"]

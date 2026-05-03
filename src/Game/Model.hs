@@ -4,14 +4,16 @@ import Game.User (User)
 import System.Random (StdGen)
 
 data Model = Model
-    {
-     user ∷ User
+    { user ∷ User
     , generator ∷ StdGen
-    , assetsLoaded ∷ Bool
     }
 
 instance Eq Model where
-    m == n = m.assetsLoaded == n.assetsLoaded && m.user == n.user
+    m == n = m.user == n.user
+
+-- loadFromPage :: IO User
+-- loadFromPage = do
+
 
 initModel ∷ User → StdGen → Model
-initModel user generator = Model{user = user, assetsLoaded = False, generator = generator}
+initModel user generator = Model{user = user, generator = generator}
