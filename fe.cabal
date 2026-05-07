@@ -46,7 +46,7 @@ executable app
   main-is:
     Main.hs
   build-depends:
-    base < 5, miso >= 1.9, mtl, random, unordered-containers, text
+    base < 5, miso >= 1.9, mtl, random, unordered-containers, text, ghc-experimental
   other-modules:
     Game
   hs-source-dirs:
@@ -61,7 +61,7 @@ executable test
   main-is:
     Test.hs
   build-depends:
-    base < 5, miso >= 1.9, mtl, random, unordered-containers, text, hedgehog
+    base < 5, miso >= 1.9, mtl, random, unordered-containers, text, hedgehog, ghc-experimental
   other-modules:
     Game
   hs-source-dirs:

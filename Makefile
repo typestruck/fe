@@ -14,7 +14,7 @@ watch:
 	ghciwatch --after-startup-ghci :main --before-reload-shell 'sh cs.sh' --after-reload-ghci :main --debounce 50ms --watch src --command 'wasm32-wasi-cabal repl app -finteractive --repl-options="-fghci-browser -fghci-browser-port=8080"'
 
 build:
-	wasm32-wasi-cabal build app
+	wasm32-wasi-cabal build app -fssr
 	rm -rf public
 	cp -r static public
 	$(eval my_wasm=$(shell wasm32-wasi-cabal list-bin app | tail -n 1))
