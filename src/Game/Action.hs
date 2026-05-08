@@ -1,9 +1,10 @@
 module Game.Action where
-
+import Game.User (User)
+import Miso (MisoString)
 
 data Action
-    = CheckAssets
-    | ReplaceTiles
-    | EndGame
-    | CreateAccount
+    = CheckUser
+    | CreateUser (Maybe User)
+    | SetUser User
+    | DisplayError MisoString
     deriving (Show, Eq)
