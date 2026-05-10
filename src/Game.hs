@@ -44,7 +44,18 @@ setUser user = do
 
 joinQueue ∷ Effect parent Model Action
 joinQueue = do
-    pure ()
+    listenServerEvents
+
+#ifdef WASM
+--defined in index.js
+foreign import javascript "return window.listenServerEvents($1)" lse :: MisoString -> IO ()
+#else
+lse :: MisoString -> IO ()
+lse _ = pure ()
+#endif
+
+listenServerEvents :: Effect parent Model Action
+listenServerEvents = M.io_ . lse $ baseUrl <> "game/events"
 
 createUser ∷ Maybe User → Effect parent Model Action
 createUser user = MF.postJSON' (baseUrl <> "user/create") user [] ok notOk

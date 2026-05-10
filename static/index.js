@@ -2,6 +2,18 @@
 import { WASI, OpenFile, File, ConsoleStdout } from "https://cdn.jsdelivr.net/npm/@bjorn3/browser_wasi_shim@0.3.0/dist/index.js";
 import ghc_wasm_jsffi from "./ghc_wasm_jsffi.js";
 
+let events;
+
+window.listenServerEvents = function (url) {
+  if (events) return;
+
+  events = new EventSource(url);
+  events.onmessage = (event) => {
+    console.log('event ', event);
+  };
+
+};
+
 const args = [];
 const env = ["GHCRTS=-H64m"];
 const fds = [
@@ -11,7 +23,6 @@ const fds = [
 ];
 const options = { debug: false };
 const wasi = new WASI(args, env, fds, options);
-
 const instance_exports = {};
 const { instance } = await WebAssembly.instantiateStreaming(fetch("app.wasm"), {
   wasi_snapshot_preview1: wasi.wasiImport,

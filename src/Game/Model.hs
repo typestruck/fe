@@ -30,7 +30,7 @@ extractModel = pure $ M.toMisoString ""
 loadFromPage ∷ IO User
 loadFromPage = do
     json ← extractModel
-    case MJ.decode (traceShow json json) of
+    case MJ.decode json of
         Nothing → error "we must have a user"
         Just user → pure user
 
