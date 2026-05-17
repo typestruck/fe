@@ -10,11 +10,11 @@ import GHC.Wasm.Prim
 import Miso (MisoString)
 import Miso qualified as M
 import Miso.JSON qualified as MJ
-import Debug.Trace (traceShow)
 
 data Model = Model
     { user ∷ User
     , generator ∷ StdGen
+    , timer ∷ Bool
     }
 
 instance Eq Model where
@@ -35,4 +35,4 @@ loadFromPage = do
         Just user → pure user
 
 initModel ∷ User → StdGen → Model
-initModel user generator = Model{user = user, generator = generator}
+initModel user generator = Model{user = user, generator = generator, timer = False}

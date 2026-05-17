@@ -4,27 +4,18 @@
 
 module Game where
 
-import Control.Concurrent qualified as CC
-import Control.Monad qualified as CM
-import Control.Monad.RWS (MonadState)
-import Data.HashMap.Strict qualified as DM
-import Data.HashSet (HashSet)
-import Data.HashSet qualified as DS
-import Data.List qualified as DL
 import Data.Maybe qualified as DM
 import Game.Action (Action (..))
 import Game.Model (Model (..))
-import Game.Model qualified as GM
 import Game.User (User (..))
-import Miso (Effect)
+import Miso (Effect, Response(..))
 import Miso qualified as M
+#ifdef WASM
+import GHC.Wasm.Prim
+#endif
 import Miso.Fetch qualified as MF
 import Miso.State qualified as MS
 import Miso.String (MisoString)
-import Miso.String qualified as MSS
-import System.Random (StdGen)
-import System.Random qualified as MR
-import View qualified as V
 import Prelude hiding (words)
 
 default (MisoString)
@@ -35,16 +26,20 @@ update =
         CheckUser → checkUser
         CreateUser possible → createUser possible
         SetUser user → setUser user
+        JoinQueue -> joinQueue
+        StartTimer -> startTimer
         DisplayError err → pure ()
+
+startTimer  ∷  Effect parent Model Action
+startTimer = MS.modify' $ \ model -> model { timer = True }
 
 setUser ∷ User → Effect parent Model Action
 setUser user = do
     MS.modify' $ \m → m{user = user}
-    joinQueue
+    listenServerEvents
 
 joinQueue ∷ Effect parent Model Action
-joinQueue = do
-    listenServerEvents
+joinQueue = MF.postJSON (baseUrl <> "game/start") () [] (const StartTimer) notOk
 
 #ifdef WASM
 --defined in index.js
@@ -61,7 +56,10 @@ createUser ∷ Maybe User → Effect parent Model Action
 createUser user = MF.postJSON' (baseUrl <> "user/create") user [] ok notOk
   where
     ok response = SetUser response.body
-    notOk response = DisplayError $ DM.fromMaybe "An error occured" response.body
+
+
+notOk :: Response (Maybe MisoString) -> Action
+notOk response = DisplayError $ DM.fromMaybe "An error occured" response.body
 
 -- if the user is not logged in automatically create a new account for their first game
 checkUser ∷ Effect parent Model Action
@@ -70,7 +68,7 @@ checkUser = do
     if model.user.id == 0 then
         createUser Nothing
     else
-        joinQueue
+        listenServerEvents
 
 baseUrl ∷ MisoString
 #ifdef INTERACTIVE

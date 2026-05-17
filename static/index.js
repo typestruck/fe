@@ -1,30 +1,37 @@
 
-import { WASI, OpenFile, File, ConsoleStdout } from "https://cdn.jsdelivr.net/npm/@bjorn3/browser_wasi_shim@0.3.0/dist/index.js";
+import { WASI, OpenFile, File, ConsoleStdout } from 'https://cdn.jsdelivr.net/npm/@bjorn3/browser_wasi_shim@0.3.0/dist/index.js';
 import ghc_wasm_jsffi from "./ghc_wasm_jsffi.js";
 
 let events;
 
 window.listenServerEvents = function (url) {
-  if (events) return;
+  function raiseOpenEvent() { window.dispatchEvent(new CustomEvent('sse-open')); }
+
+  if (events) {
+    raiseOpenEvent();
+    return;
+  }
 
   events = new EventSource(url);
-  events.onmessage = (event) => {
-    console.log('event ', event);
+  events.onopen = _ => {
+    raiseOpenEvent();
   };
+  events.onmessage = (event) => {
 
+  };
 };
 
 const args = [];
 const env = ["GHCRTS=-H64m"];
 const fds = [
   new OpenFile(new File([])), // stdin
-  ConsoleStdout.lineBuffered((msg) => console.log(`[WASI stdout] ''${msg}`)),
-  ConsoleStdout.lineBuffered((msg) => console.warn(`[WASI stderr] ''${msg}`)),
+  ConsoleStdout.lineBuffered((msg) => console.log(`[WASI stdout] ${msg}`)),
+  ConsoleStdout.lineBuffered((msg) => console.warn(`[WASI stderr] ${msg}`)),
 ];
 const options = { debug: false };
 const wasi = new WASI(args, env, fds, options);
 const instance_exports = {};
-const { instance } = await WebAssembly.instantiateStreaming(fetch("app.wasm"), {
+const { instance } = await WebAssembly.instantiateStreaming(fetch('app.wasm'), {
   wasi_snapshot_preview1: wasi.wasiImport,
   ghc_wasm_jsffi: ghc_wasm_jsffi(instance_exports),
 });
