@@ -2,25 +2,6 @@
 import { WASI, OpenFile, File, ConsoleStdout } from 'https://cdn.jsdelivr.net/npm/@bjorn3/browser_wasi_shim@0.3.0/dist/index.js';
 import ghc_wasm_jsffi from "./ghc_wasm_jsffi.js";
 
-let events;
-
-window.listenServerEvents = function (url) {
-  function raiseOpenEvent() { window.dispatchEvent(new CustomEvent('sse-open')); }
-
-  if (events) {
-    raiseOpenEvent();
-    return;
-  }
-
-  events = new EventSource(url);
-  events.onopen = _ => {
-    raiseOpenEvent();
-  };
-  events.onmessage = (event) => {
-
-  };
-};
-
 const args = [];
 const env = ["GHCRTS=-H64m"];
 const fds = [

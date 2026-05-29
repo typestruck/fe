@@ -6,15 +6,24 @@ import Game.User (User (..))
 import System.Random (StdGen)
 #ifdef WASM
 import GHC.Wasm.Prim
-#endif
-import Miso (MisoString)
 import Miso qualified as M
+#else
+import Miso qualified as M
+import Miso (MisoString)
+#endif
+import Game.Card ( Card(..) )
 import Miso.JSON qualified as MJ
+import Game.Status(Status(..))
+import Game.Player (Player(..))
+import Game.Events (Events(Events))
+import Debug.Trace (traceShow)
 
 data Model = Model
     { user ∷ User
     , generator ∷ StdGen
-    , timer ∷ Bool
+    , status ∷ Status
+    , deck :: [Card]
+    , players :: [Player]
     }
 
 instance Eq Model where
@@ -35,4 +44,4 @@ loadFromPage = do
         Just user → pure user
 
 initModel ∷ User → StdGen → Model
-initModel user generator = Model{user = user, generator = generator, timer = False}
+initModel user generator = Model{user, generator, status = NotPlaying, deck = [], players = []}

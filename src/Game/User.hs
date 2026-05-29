@@ -13,11 +13,11 @@ default (MisoString)
 data User = User {id ∷ Int, name ∷ MisoString, email ∷ Maybe MisoString} deriving (Show, Eq)
 
 instance ToJSON User where
-    toJSON user = MJ.object ["Id" .= user.id, "Name" .= user.name, "Email" .= user.email]
+    toJSON user = MJ.object ["id" .= user.id, "name" .= user.name, "email" .= user.email]
 
 instance FromJSON User where
     parseJSON = MJ.withObject "User" $ \v → do
-        id ← v .: "Id"
-        name ← v .: "Name"
-        email ← v .: "Email"
+        id ← v .: "id"
+        name ← v .: "name"
+        email ← v .: "email"
         pure User{id, name, email}

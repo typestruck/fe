@@ -8,15 +8,21 @@ import Data.Maybe qualified as DM
 import Game.Action (Action (..))
 import Game.Model (Model (..))
 import Game.User (User (..))
-import Miso (Effect, Response(..))
+import Miso (Effect, Response (body))
 import Miso qualified as M
 #ifdef WASM
 import GHC.Wasm.Prim
 #endif
+import Debug.Trace (traceShow)
+import Game.Events qualified as GE
 import Miso.Fetch qualified as MF
 import Miso.State qualified as MS
 import Miso.String (MisoString)
+import Game.Events(Events(..))
 import Prelude hiding (words)
+import Game.Move (Step(Start, Draw), Move(..))
+import Game.Status (Status(Waiting, Playing))
+import qualified Data.Foldable as DF
 
 default (MisoString)
 
@@ -26,12 +32,19 @@ update =
         CheckUser → checkUser
         CreateUser possible → createUser possible
         SetUser user → setUser user
-        JoinQueue -> joinQueue
-        StartTimer -> startTimer
-        DisplayError err → pure ()
+        JoinQueue → joinQueue
+        StartTimer → startTimer
+        HandleEvents events -> handleEvents events
+        DisplayError _ → pure ()
 
-startTimer  ∷  Effect parent Model Action
-startTimer = MS.modify' $ \ model -> model { timer = True }
+handleEvents ∷ Events -> Effect parent Model Action
+handleEvents events = DF.traverse_ go events.moves
+    where go move = case move.step  of
+            Start -> MS.modify' $ \model -> model { status = Playing, deck = events.cards, players = events.players }
+            Draw -> pure ()
+
+startTimer ∷ Effect parent Model Action
+startTimer = MS.modify' $ \model → model{status = Waiting}
 
 setUser ∷ User → Effect parent Model Action
 setUser user = do
@@ -41,24 +54,15 @@ setUser user = do
 joinQueue ∷ Effect parent Model Action
 joinQueue = MF.postJSON (baseUrl <> "game/start") () [] (const StartTimer) notOk
 
-#ifdef WASM
---defined in index.js
-foreign import javascript "return window.listenServerEvents($1)" lse :: MisoString -> IO ()
-#else
-lse :: MisoString -> IO ()
-lse _ = pure ()
-#endif
-
-listenServerEvents :: Effect parent Model Action
-listenServerEvents = M.io_ . lse $ baseUrl <> "game/events"
+listenServerEvents ∷ Effect parent Model Action
+listenServerEvents = M.io_ . GE.listenServerEvents $ baseUrl <> "game/events"
 
 createUser ∷ Maybe User → Effect parent Model Action
 createUser user = MF.postJSON' (baseUrl <> "user/create") user [] ok notOk
   where
     ok response = SetUser response.body
 
-
-notOk :: Response (Maybe MisoString) -> Action
+notOk ∷ Response (Maybe MisoString) → Action
 notOk response = DisplayError $ DM.fromMaybe "An error occured" response.body
 
 -- if the user is not logged in automatically create a new account for their first game

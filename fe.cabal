@@ -38,7 +38,7 @@ common options
 
 common common-modules
   other-modules:
-    User.View, Game.Model, View, Game.Action, Game.User, Styles, Game.View
+    User.View, Game.Model, View, Game.Action, Game.User, Styles, Game.View, Game.Events, Game.Move, Game.Card, Game.Player, Game.Status
 
 executable app
   import:
@@ -46,7 +46,7 @@ executable app
   main-is:
     Main.hs
   build-depends:
-    base < 5, miso >= 1.9, mtl, random, unordered-containers, text, ghc-experimental, containers
+    base < 5, miso >= 1.10, mtl, random, unordered-containers, text, ghc-experimental, containers
   other-modules:
     Game
   hs-source-dirs:
@@ -61,7 +61,7 @@ executable test
   main-is:
     Test.hs
   build-depends:
-    base < 5, miso >= 1.9, mtl, random, unordered-containers, text, hedgehog, ghc-experimental, containers
+    base < 5, miso >= 1.10, mtl, random, unordered-containers, text, hedgehog, ghc-experimental, containers
   other-modules:
     Game
   hs-source-dirs:
