@@ -8,6 +8,7 @@ import Game.Model (Model (..))
 import Game.Status (Status (..))
 import Miso (MisoString, View)
 import Miso qualified as M
+import Debug.Trace
 import Miso.Html qualified as HP
 import Miso.Html.Element qualified as HE
 import Miso.Html.Property qualified as HP
@@ -35,5 +36,5 @@ playing ∷ Model → [View Model Action]
 playing model =
     [ HE.div_
         []
-        []
+        [ M.text "this is garbage" ]
     ]

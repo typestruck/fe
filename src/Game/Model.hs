@@ -24,10 +24,7 @@ data Model = Model
     , status ∷ Status
     , deck :: [Card]
     , players :: [Player]
-    }
-
-instance Eq Model where
-    m == n = m.user == n.user
+    } deriving (Eq, Show)
 
 #ifdef WASM
 foreign import javascript "return document.getElementById('fe-model').innerHTML" extractModel :: IO JSString

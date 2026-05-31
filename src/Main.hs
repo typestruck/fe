@@ -21,7 +21,7 @@ import View qualified as V
 import Game.Action (Action(..))
 import qualified Miso.JSON as MJ
 import Miso.JSON ((.:))
-import Debug.Trace (traceShow)
+import Debug.Trace (traceShow, trace)
 
 default (MisoString)
 
@@ -39,7 +39,7 @@ main = do
     generator ← MR.newStdGen
     let model = GM.initModel (User{id = 0, name = "playa", email = Nothing}) generator
 #ifdef INTERACTIVE
-    M.reload defaultEvents (M.component model G.update V.view) {
+    M.live defaultEvents (M.component model G.update V.view) {
         subs = ssrEventHandlers,
         styles = [Style S.styles]
     }
@@ -61,5 +61,5 @@ main = do
         payloadDecoder = M.at ["detail"] . MJ.withObject "" $ \a -> a .: "payload" <&> P
         -- we need all this because it is not possible to decode a complex object from Decoder
         v f (P p) = case MJ.decode p of
-                Just r -> f r
-                Nothing -> error ("error decoding payload for events. payload was: " <> show p)
+                        Just r -> f r
+                        Nothing -> error ("error decoding payload for events. payload was: " <> show p)

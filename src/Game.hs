@@ -13,7 +13,7 @@ import Miso qualified as M
 #ifdef WASM
 import GHC.Wasm.Prim
 #endif
-import Debug.Trace (traceShow)
+import Debug.Trace (traceShow, trace)
 import Game.Events qualified as GE
 import Miso.Fetch qualified as MF
 import Miso.State qualified as MS
@@ -21,8 +21,9 @@ import Miso.String (MisoString)
 import Game.Events(Events(..))
 import Prelude hiding (words)
 import Game.Move (Step(Start, Draw), Move(..))
-import Game.Status (Status(Waiting, Playing))
+import Game.Status (Status(Waiting, Playing, NotPlaying))
 import qualified Data.Foldable as DF
+import Game.Card (Card(Card, color, cost, energy, actions), Color (Red))
 
 default (MisoString)
 
@@ -34,12 +35,13 @@ update =
         SetUser user → setUser user
         JoinQueue → joinQueue
         StartTimer → startTimer
-        HandleEvents events -> handleEvents events
+        HandleEvents events → handleEvents events
         DisplayError _ → pure ()
 
 handleEvents ∷ Events -> Effect parent Model Action
-handleEvents events = DF.traverse_ go events.moves
-    where go move = case move.step  of
+handleEvents events = do
+    DF.traverse_ go events.moves
+    where go move = case move.step of
             Start -> MS.modify' $ \model -> model { status = Playing, deck = events.cards, players = events.players }
             Draw -> pure ()
 
@@ -48,17 +50,17 @@ startTimer = MS.modify' $ \model → model{status = Waiting}
 
 setUser ∷ User → Effect parent Model Action
 setUser user = do
-    MS.modify' $ \m → m{user = user}
+    MS.modify' $ \model → model{user = traceShow user user, status = traceShow Playing Playing}
     listenServerEvents
 
 joinQueue ∷ Effect parent Model Action
-joinQueue = MF.postJSON (baseUrl <> "game/start") () [] (const StartTimer) notOk
+joinQueue = MF.postJSON "/game/start" () [] (const StartTimer) notOk
 
 listenServerEvents ∷ Effect parent Model Action
-listenServerEvents = M.io_ . GE.listenServerEvents $ baseUrl <> "game/events"
+listenServerEvents = M.io_ $ GE.listenServerEvents  "/game/events"
 
 createUser ∷ Maybe User → Effect parent Model Action
-createUser user = MF.postJSON' (baseUrl <> "user/create") user [] ok notOk
+createUser user = MF.postJSON' "/user/create" user [] ok notOk
   where
     ok response = SetUser response.body
 
@@ -73,10 +75,3 @@ checkUser = do
         createUser Nothing
     else
         listenServerEvents
-
-baseUrl ∷ MisoString
-#ifdef INTERACTIVE
-baseUrl = "http://localhost:5234/"
-#else
-baseUrl = "/"
-#endif
