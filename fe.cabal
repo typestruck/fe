@@ -55,16 +55,16 @@ executable app
     GHC2024
 
 -- need to be like this instead of depending on library because otherwise it breaks js code generation
-executable test
-  import:
-    options, warnings, common-modules
-  main-is:
-    Test.hs
-  build-depends:
-    base < 5, miso >= 1.10, mtl, random, unordered-containers, text, hedgehog, ghc-experimental, containers
-  other-modules:
-    Game
-  hs-source-dirs:
-    test, src
-  default-language:
-    GHC2024
+-- executable test
+--   import:
+--     options, warnings, common-modules
+--   main-is:
+--     Test.hs
+--   build-depends:
+--     base < 5, miso >= 1.10, mtl, random, unordered-containers, text, hedgehog, ghc-experimental, containers
+--   other-modules:
+--     Game
+--   hs-source-dirs:
+--     test, src
+--   default-language:
+--     GHC2024

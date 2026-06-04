@@ -21,5 +21,4 @@ view model =
         [HP.className "dark:bg-gray-800 dark:text-white min-h-full flex flex-col md:flex-row md:items-start"]
         [ UV.view model
         , GV.view model
-        , M.text $ M.toMisoString $ show model.status
         ]

@@ -28,12 +28,14 @@ instance FromJSON Step where
 
 data Move = Move
     { step ∷ Step
-    , ids ∷ [Int]
+    , by ∷ Int
+    , values ∷ [Int]
     }
     deriving (Show, Eq)
 
 instance FromJSON Move where
     parseJSON = MJ.withObject "Move" $ \o → do
         step ← o .: "step"
-        ids ← o .: "ids"
-        pure Move{step, ids}
+        values ← o .: "values"
+        by ← o .: "by"
+        pure Move{step, by, values}

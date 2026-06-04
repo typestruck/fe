@@ -57,17 +57,21 @@ instance FromJSON CAction where
         pure CAction{target, value}
 
 data Card = Card
-    { color ∷ Color
+    { idc ∷ Int
+    , color ∷ Color
     , cost ∷ Int
     , energy ∷ Int
+    , description ∷ MisoString
     , actions ∷ [CAction]
     }
     deriving (Show, Eq)
 
 instance FromJSON Card where
     parseJSON = MJ.withObject "Card" $ \o → do
+        idc ← o .: "idc"
         color ← o .: "color"
         cost ← o .: "cost"
         energy ← o .: "energy"
+        description ← o .: "description"
         actions ← o .: "actions"
-        pure Card{color, cost, energy, actions}
+        pure Card{idc, color, cost, energy, description, actions}
