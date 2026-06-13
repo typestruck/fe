@@ -19,7 +19,7 @@ import Data.Foldable qualified as DF
 import Debug.Trace (trace, traceShow)
 import Game.Events (Events (..))
 import Game.Events qualified as GE
-import Game.Move (Move (..), Step (Draw, Start))
+import Game.Move (Move (..), Step (..))
 import Game.Status (Status (..))
 import Miso.Fetch qualified as MF
 import Miso.State qualified as MS
@@ -45,8 +45,14 @@ handleEvents events = DF.traverse_ go events.moves
     go move = case move.step of
         Start → start
         Draw → draw move
+        Energize → energize move
 
-    start = MS.modify' $ \model → model{status = Playing, deck = events.cards, players = events.players}
+    start = MS.modify' $ \model →
+        model
+            { status = Playing
+            , deck = events.cards
+            , players = events.players
+            }
 
     draw move = MS.modify' $ \model →
         model
@@ -58,8 +64,10 @@ handleEvents events = DF.traverse_ go events.moves
             | player.idp == move.by = player{hand = player.hand <> take (head move.values) deck}
             | otherwise = player
 
+    energize move = MS.modify' $ \model → model{turn = Just move.by}
+
 startTimer ∷ Effect parent Model Action
-startTimer = MS.modify' $ \model → model{status = Waiting}
+startTimer = MS.modify' $ \model → if model.status == Playing then model else model{status = Waiting}
 
 setUser ∷ User → Effect parent Model Action
 setUser user = do

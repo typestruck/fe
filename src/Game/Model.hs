@@ -15,13 +15,13 @@ import Game.Card ( Card(..) )
 import Miso.JSON qualified as MJ
 import Game.Status(Status(..))
 import Game.Player (Player(..))
-import Game.Events (Events(Events))
 import Debug.Trace (traceShow)
 
 data Model = Model
     { user ∷ User
     , generator ∷ StdGen
     , status ∷ Status
+    , turn :: Maybe Int
     , deck :: [Card]
     , players :: [Player]
     } deriving (Eq, Show)
@@ -41,4 +41,4 @@ loadFromPage = do
         Just user → pure user
 
 initModel ∷ User → StdGen → Model
-initModel user generator = Model{user, generator, status = NotPlaying, deck = [], players = []}
+initModel user generator = Model{user, generator, status = NotPlaying, deck = [], players = [], turn = Nothing}

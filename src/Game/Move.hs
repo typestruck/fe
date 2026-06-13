@@ -16,6 +16,7 @@ default (MisoString)
 data Step
     = Start
     | Draw
+    | Energize
     deriving (Show, Eq)
 
 instance FromJSON Step where
@@ -24,7 +25,8 @@ instance FromJSON Step where
             pure . \case
                 0.0 → Start
                 1.0 → Draw
-                _ → error "no matching color value"
+                2.0 -> Energize
+                _ → error "no matching step value"
 
 data Move = Move
     { step ∷ Step
